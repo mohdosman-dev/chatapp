@@ -1,5 +1,6 @@
 import User from "../models/user.model";
 import { BadRequestError, UnauthorizedError } from "../utils/app-error";
+import { saveAvatar } from "../utils/file.utils";
 import { LoginSchema, RegisterSchema } from "../validators/auth.validator";
 
 export const registerService = async (body: RegisterSchema) => {
@@ -8,6 +9,12 @@ export const registerService = async (body: RegisterSchema) => {
 
   if (existingUser) {
     throw new BadRequestError("User already exisits!");
+  }
+
+  // Save avatar if provided
+  if (body.avatar) {
+    const avatarPath = await saveAvatar(body.avatar, email);
+    body.avatar = avatarPath;
   }
 
   const newUser = new User({

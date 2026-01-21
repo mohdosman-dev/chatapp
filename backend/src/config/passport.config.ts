@@ -10,9 +10,17 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromExtractors([
         // 1) Browser: Cookie
         (req) => {
+          console.log("req.cookies: ", req.cookies);
+          console.log("req.headers: ", req.headers);
+
           if (req?.cookies?.accessToken) {
+            // Web: Cookie
             return req.cookies.accessToken;
+          } else if (req?.headers?.authorization) {
+            // Mobile / API clients: Authorization header
+            return req.headers.authorization.split(" ")[1];
           }
+          // No token found
           return null;
         },
 
@@ -30,8 +38,8 @@ passport.use(
       } catch (error) {
         return done(error, false);
       }
-    }
-  )
+    },
+  ),
 );
 
 export const passportJwtAuthenticate = passport.authenticate("jwt", {

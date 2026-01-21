@@ -13,3 +13,9 @@ node_modules/
 
 .env
 dist/
+
+# Database
+db.sqlite
+
+# Uploads folder
+uploads/**

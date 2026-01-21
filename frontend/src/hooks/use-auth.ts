@@ -30,7 +30,7 @@ export const useAuth = create<AuthState>()(
           // Reeturn error
           toast.error(error.response?.data?.message || "Login failed");
         } finally {
-          set({ isAuthenticating: true });
+          set({ isAuthenticating: false });
         }
       },
       signup: async (data: RegisterType) => {
