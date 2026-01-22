@@ -8,7 +8,9 @@ export const API = axios.create({
 
 API.interceptors.request.use(
   async (config) => {
-    config.headers["Content-Type"] = "application/json";
+    if (!config.headers["Content-Type"]) {
+      config.headers["Content-Type"] = "application/json";
+    }
 
     try {
       const token = await SecureStore.getItemAsync("token");

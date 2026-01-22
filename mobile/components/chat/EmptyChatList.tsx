@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { Button } from "../ui/Button";
 
 type EmptyChatListProp = {
@@ -33,7 +33,7 @@ const EmptyChatList = ({
         <Text className="text-subtle-foreground text-sm mt-1">{subtitle}</Text>
       )}
 
-      {buttonLabel && buttonLabel ? (
+      {buttonLabel && onPressButton ? (
         <Button
           className="mt-6 rounded-full"
           onPress={onPressButton}
@@ -43,7 +43,5 @@ const EmptyChatList = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default EmptyChatList;

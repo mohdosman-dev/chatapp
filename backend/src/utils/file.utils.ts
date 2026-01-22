@@ -7,6 +7,9 @@ export async function saveAvatar(
   identifier: string,
 ): Promise<string> {
   const uploadDir = path.join(__dirname, "../../uploads/avatars");
+  const safeIdentifier = identifier.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+  const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2MB
 
   // Ensure directory exists
   if (!fs.existsSync(uploadDir)) {
@@ -29,23 +32,33 @@ export async function saveAvatar(
     }
 
     const extension = "." + mimeType.split("/")[1];
-    const filename = `avatar-${identifier}-${Date.now()}${extension}`;
+    const filename = `avatar-${safeIdentifier}-${Date.now()}${extension}`;
     const uploadPath = path.join(uploadDir, filename);
 
     const buffer = Buffer.from(base64Data, "base64");
+    if (buffer.length > MAX_AVATAR_BYTES) {
+      throw new AppError("Avatar too large", 413);
+    }
     await fs.promises.writeFile(uploadPath, buffer);
 
     return `/uploads/avatars/${filename}`;
   }
 
   // Handle File Object (Multipart)
+  if (!file || typeof file !== "object") {
+    throw new AppError("Invalid file input", 400);
+  }
+
   // Validation
+  if (!file.mimetype) {
+    throw new AppError("File mimetype is required", 400);
+  }
   if (!file.mimetype.startsWith("image/")) {
     throw new AppError("Only image files are allowed", 400);
   }
 
   const extension = path.extname(file.filename);
-  const filename = `avatar-${identifier}-${Date.now()}${extension}`;
+  const filename = `avatar-${safeIdentifier}-${Date.now()}${extension}`;
   const uploadPath = path.join(uploadDir, filename);
 
   // Handle file content

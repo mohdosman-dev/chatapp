@@ -10,9 +10,6 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromExtractors([
         // 1) Browser: Cookie
         (req) => {
-          console.log("req.cookies: ", req.cookies);
-          console.log("req.headers: ", req.headers);
-
           if (req?.cookies?.accessToken) {
             // Web: Cookie
             return req.cookies.accessToken;

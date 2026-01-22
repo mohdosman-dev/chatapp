@@ -36,9 +36,9 @@ export const Button = ({
   return (
     <Pressable
       className={`${baseStyles} ${variants[variant]} ${className} ${disabled || isLoading ? "opacity-50" : ""}`}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.8 : 1,
-      })}
+      style={({ pressed }) =>
+        disabled || isLoading ? undefined : { opacity: pressed ? 0.8 : 1 }
+      }
       disabled={disabled || isLoading}
       {...props}
     >

@@ -8,9 +8,9 @@ interface AuthState {
   isLoggedIn: boolean;
   isSigningUp: boolean;
   isAuthenticating: boolean;
-  login: (data: LoginType) => void;
-  signup: (data: RegisterType) => void;
-  logout: () => void;
+  login: (data: LoginType) => Promise<void>;
+  signup: (data: RegisterType) => Promise<void>;
+  logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
 }
 
@@ -45,6 +45,9 @@ export const useAuth = create<AuthState>((set) => ({
         isLoggedIn: true,
         isSigningUp: false,
       });
+      if (response.data.token) {
+        await SecureStore.setItemAsync("token", response.data.token);
+      }
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Registration failed");
     } finally {
@@ -60,7 +63,11 @@ export const useAuth = create<AuthState>((set) => ({
         isLoggedIn: false,
         isAuthenticating: false,
       });
+      await SecureStore.deleteItemAsync("token");
     } catch (error: any) {
+      await SecureStore.deleteItemAsync("token");
+      set({ user: null, isLoggedIn: false });
+
       throw new Error(error.response?.data?.message || "Logout failed");
     } finally {
       set({ isAuthenticating: false });
@@ -69,6 +76,10 @@ export const useAuth = create<AuthState>((set) => ({
   fetchUser: async () => {
     set({ isAuthenticating: true });
     try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
       const response = await API.get("/auth/status");
       set({
         user: response.data.user,
@@ -76,6 +87,7 @@ export const useAuth = create<AuthState>((set) => ({
         isAuthenticating: false,
       });
     } catch (error: any) {
+      await SecureStore.deleteItemAsync("token");
       throw new Error(error.response?.data?.message || "Fetch user failed");
     } finally {
       set({ isAuthenticating: false });

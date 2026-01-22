@@ -15,26 +15,32 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  let hasError = false;
+
   const handleLogin = async () => {
+    // Clear previous errors
+    setEmailError("");
+    setPasswordError("");
+
     try {
       if (!email) {
         setEmailError("Email is required");
-        return;
-      } else {
-        setEmailError("");
+        hasError = true;
       }
       if (!password) {
         setPasswordError("Password is required");
-        return;
+        hasError = true;
       }
+
+      if (hasError) return;
       await login({ email, password });
       router.replace("/(tabs)");
     } catch (error: any) {
-      console.log(error);
       Alert.alert("Error", error.message);
     }
   };
@@ -75,7 +81,7 @@ const LoginScreen = () => {
         <View className="flex-col px-6 pb-10 gap-4">
           <Input
             label="Email Address"
-            iconName="mail-outline"
+            leadingIcon="mail-outline"
             placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
@@ -87,12 +93,14 @@ const LoginScreen = () => {
 
           <Input
             label="Password"
-            iconName="lock-closed-outline"
+            leadingIcon="lock-closed-outline"
             placeholder="Enter your password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={showPassword}
             error={passwordError}
+            trailingIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+            onPressTrailing={() => setShowPassword(!showPassword)}
           />
 
           {/* Remember Me & Forgot Password */}
@@ -114,7 +122,10 @@ const LoginScreen = () => {
             </Pressable>
 
             <Pressable>
-              <Text className="text-primary text-sm font-medium">
+              <Text
+                className="text-primary text-sm font-medium"
+                onPress={() => console.log("Forgot Password")}
+              >
                 Forgot Password?
               </Text>
             </Pressable>

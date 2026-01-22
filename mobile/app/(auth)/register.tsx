@@ -107,7 +107,7 @@ const RegisterScreen = () => {
         <View className="flex-col px-6 pb-10 gap-4 mt-4">
           <Input
             label="Username"
-            iconName="person-outline"
+            leadingIcon="person-outline"
             placeholder="Choose a username"
             value={username}
             onChangeText={setUsername}
@@ -116,7 +116,7 @@ const RegisterScreen = () => {
 
           <Input
             label="Email Address"
-            iconName="mail-outline"
+            leadingIcon="mail-outline"
             placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
@@ -126,7 +126,7 @@ const RegisterScreen = () => {
 
           <Input
             label="Password"
-            iconName="lock-closed-outline"
+            leadingIcon="lock-closed-outline"
             placeholder="Create a password"
             value={password}
             onChangeText={setPassword}

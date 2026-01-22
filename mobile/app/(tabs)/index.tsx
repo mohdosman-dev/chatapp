@@ -15,13 +15,18 @@ import EmptyChatList from "@/components/chat/EmptyChatList";
 const ChatsTab = () => {
   const { chats, getChats, isLoadingChats: isLoading } = useChats();
 
-  useEffect(() => {
+  const fetchChats = async () => {
     try {
-      getChats();
+      await getChats();
     } catch (error: any) {
       alert(error.message);
     }
-  }, [getChats]);
+  };
+
+  useEffect(() => {
+    fetchChats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChatPress = (chat: ChatType): void => {
     console.log("Chat pressed: ", JSON.stringify(chat));
