@@ -1,19 +1,17 @@
 import React, { useEffect } from "react";
-import {
-  Text,
-  ScrollView,
-  View,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { View, ActivityIndicator, FlatList } from "react-native";
 import { useChats } from "../hooks/use.chats";
 import { ChatType } from "../@types/chat.type";
 import ChatListHeader from "../../components/chat/ChatListHeader";
 import ChatListItem from "../../components/chat/ChatListItem";
 import EmptyChatList from "@/components/chat/EmptyChatList";
+import { useAuth } from "../hooks/use.auth";
+import { useRouter } from "expo-router";
 
 const ChatsTab = () => {
+  const router = useRouter();
   const { chats, getChats, isLoadingChats: isLoading } = useChats();
+  const { user } = useAuth();
 
   const fetchChats = async () => {
     try {
@@ -25,16 +23,14 @@ const ChatsTab = () => {
 
   useEffect(() => {
     fetchChats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChatPress = (chat: ChatType): void => {
-    console.log("Chat pressed: ", JSON.stringify(chat));
+    router.push(`/chat/${chat._id}`);
   };
 
-  const handleNewConversation = () => {
-    console.log("New conversation pressed");
-  };
+  const handleNewConversation = () => {};
 
   if (isLoading)
     return (
@@ -48,9 +44,24 @@ const ChatsTab = () => {
       <FlatList
         data={chats}
         keyExtractor={(chat) => chat._id}
-        renderItem={({ item: chat }) => (
-          <ChatListItem chat={chat} onPress={() => handleChatPress(chat)} />
-        )}
+        renderItem={({ item: chat }) => {
+          const participant: { name?: string; avatar?: string } =
+            chat.participants.find(
+              (participant) => participant._id !== user?._id,
+            ) || {};
+
+          if (!participant.name) {
+            participant.name = chat.groupName || "Group Chat";
+          }
+
+          return (
+            <ChatListItem
+              chat={chat}
+              participant={participant}
+              onPress={() => handleChatPress(chat)}
+            />
+          );
+        }}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
@@ -69,6 +80,7 @@ const ChatsTab = () => {
           <EmptyChatList
             title="No chats found"
             buttonLabel="Start a new chat"
+            iconName="chatbubbles-outline"
             onPressButton={handleNewConversation}
           />
         }

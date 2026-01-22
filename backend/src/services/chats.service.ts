@@ -11,13 +11,7 @@ export const getUserChatsService = async (userId: string) => {
     participants: { $in: [userId] },
   })
     .populate("participants", "name avatar")
-    .populate({
-      path: "lastMessage",
-      populate: {
-        path: "sender",
-        select: "name avatar",
-      },
-    })
+    .populate("lastMessage")
     .sort({ updatedAt: -1 });
 
   return chats;
@@ -30,7 +24,7 @@ export const createChatService = async (
     participants?: string[];
     isGroup?: boolean;
     groupName?: string;
-  }
+  },
 ): Promise<ChatDocument> => {
   const { participant: participantId, participants, isGroup, groupName } = body;
   let chat: ChatDocument;
@@ -41,7 +35,7 @@ export const createChatService = async (
 
     chat = await Chat.create({
       participants: allParticipants.map(
-        (id) => new mongoose.Types.ObjectId(id)
+        (id) => new mongoose.Types.ObjectId(id),
       ),
       isGroup: isGroup,
       groupName: groupName,
@@ -64,7 +58,7 @@ export const createChatService = async (
 
     chat = await Chat.create({
       participants: allParticipants.map(
-        (id) => new mongoose.Types.ObjectId(id)
+        (id) => new mongoose.Types.ObjectId(id),
       ),
       isGroup: false,
       createdBy: new mongoose.Types.ObjectId(userId),
@@ -74,7 +68,7 @@ export const createChatService = async (
   // TODO: Implement socket here
   const populatedChat = await chat.populate("participants", "name avatar");
   const participantIdString = populatedChat.participants?.map((p) =>
-    p._id.toString()
+    p._id.toString(),
   );
   emitNewChatToParticipants(participantIdString, populatedChat);
 
@@ -110,7 +104,7 @@ export const getSingleChatServices = async (chatId: string, userId: string) => {
 
 export const validateChatParticipants = async (
   userId: string,
-  chatId: string
+  chatId: string,
 ) => {
   const chat = await Chat.findOne({
     _id: chatId,
