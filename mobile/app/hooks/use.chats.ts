@@ -17,7 +17,6 @@ export const useChats = create<ChatsState>((set, get) => ({
     set({ isLoadingChats: true });
     try {
       const response = await API.get(`/chats/`);
-      console.log(JSON.stringify(response.data?.chats));
 
       set({ chats: response.data?.chats || [] });
     } catch (error: any) {
