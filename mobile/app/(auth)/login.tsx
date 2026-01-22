@@ -97,9 +97,9 @@ const LoginScreen = () => {
             placeholder="Enter your password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={showPassword}
             error={passwordError}
             trailingIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+            secureTextEntry={!showPassword}
             onPressTrailing={() => setShowPassword(!showPassword)}
           />
 
